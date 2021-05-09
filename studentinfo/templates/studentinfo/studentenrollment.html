@@ -1,0 +1,116 @@
+{% extends "studentinfo/base.html" %}
+{% block content %}
+
+
+<div class="jumbotron title">
+    <h1>{{ request.session.successflag }}</h1>
+</div>
+<div class="row d-flex justify-content-around">
+    <div class=" col-md-6 text-center">
+            <select id="studentid">
+                {% if request.session.filterstudentname %}
+                <option selected="{{ request.session.filterstudentname }}" value="{{ request.session.studentid }}">{{ request.session.filterstudentname }}</option>
+                {% else %}
+                <option selected="">Select Student</option>
+                {% endif %}
+                {% for name in studentdata %}
+                <option value="{{ name.studentid }}">{{ name.firstname }} {{ name.lastname }}</option>
+                {% endfor %}
+            </select>
+    </div>
+    <div class="col-md-6 text-center">
+        <select class="enrollment-dropdown-container" id="courseid">
+            <option selected="">Select Course</option>
+            {% for course in coursedata %}
+
+            <option value="{{ course.courseid }}">{{ course.coursetitle }}</option>
+            {% endfor %}
+        </select>
+    </div>
+</div>
+
+<div class="text-center">
+    <button class="btn btn-sm btn-dark marginbutton" id="enroll" style="align-content: center">Enroll</button>
+</div>
+<div class="container-flex" style="text-align: center">
+    <table class="table">
+        <thead>
+        <tr>
+            <th>Student Name</th>
+            <th>Enrolled Course</th>
+        </tr>
+        </thead>
+        <tbody>
+        {% for row in enrollmentdata %}
+        <tr>
+            <td>{{row.studentname}}</td>
+            <td>{{row.coursetitle}}</td>
+        </tr>
+        {% endfor %}
+        </tbody>
+    </table>
+</div>
+<div class="row paginationrow">
+    <div class="pagination">
+            <span class="step-links">
+                {% if enrollmentdata.has_previous %}
+                    <a href="?page=1">&laquo; First</a>
+                    <a href="?page={{ enrollmentdata.previous_page_number }}">Previous</a>
+                {% endif %}
+            <span class="current">
+                Page {{ enrollmentdata.number }} of {{ enrollmentdata.paginator.num_pages }}
+            </span>
+                {% if enrollmentdata.has_next %}
+                    <a href="?page={{ enrollmentdata.next_page_number }}">Next</a>
+                    <a href="?page={{ enrollmentdata.paginator.num_pages }}">last &raquo;</a>
+                {% endif %}
+            </span>
+    </div>
+</div>
+
+    <script>
+
+        $(document).ready(function (){
+
+            $('#enroll').click(function (){
+
+                $.ajax({
+
+                   url:"{% url 'saveenrollment' %}",
+                    data:{
+                      studentid: $('#studentid').val(),
+                        courseid: $('#courseid').val()
+
+                    },
+                    success: function (){
+                       window.location = "{% url 'studentenrollment' %}"
+                    }
+
+                });
+
+            });
+
+            $('#studentid').change(function (){
+
+                $.ajax({
+
+                    url:"{% url 'saveenrollment' %}",
+                    data:{
+
+                        studentid: $('#studentid').val()
+
+                    },
+                    success: function (){
+                        window.location = "{% url 'studentenrollment' %}"
+                    }
+
+                });
+
+            });
+
+
+        });
+
+    </script>
+
+{% endblock %}

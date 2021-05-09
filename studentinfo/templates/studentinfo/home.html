@@ -1,0 +1,164 @@
+{% extends "studentinfo/base.html" %}
+
+{% block content %}
+<div class="jumbotron title">
+    <h1>Student Dashboard</h1>
+</div>
+
+
+<div class="row" id="">
+    <div class="col-md-4">
+        <div class="card numbercard">
+            <div class="card-body">
+                <h5 class="card-title text-center">Average student GPA:</h5>
+                <p class="text-center">{{ studentgpa }}</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card numbercard">
+            <div class="card-body">
+                <h5 class="card-title text-center">Number of students enrolled:</h5>
+                <p class="text-center">{{ numberofstudents.totalstudents }}</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="card numbercard">
+            <div class="card-body">
+                <h5 class="card-title text-center">Number of courses available:</h5>
+                <p class="text-center">{{ numberofcourses.totalcourses }}</p>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="container-fluid">
+    <div class="row" id="chartrow">
+            <div class="col-md-6">
+                <div class="card chartborder">
+                    <div class="cardbody">
+                        <h5 class="card-title centertitle">Top 5 most popular courses</h5>
+                        <canvas class="canvasstyling" id="popularcourses" height="200" width="300">
+                        </canvas>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="card chartborder">
+                    <div class="cardbody">
+                        <h5 class="card-title centertitle">Number of students by year</h5>
+                        <canvas class="canvasstyling" id="studentdistribution" height="200" width="300">
+                        </canvas>
+                    </div>
+                </div>
+            </div>
+    </div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.2.0/chart.min.js" integrity="sha512-VMsZqo0ar06BMtg0tPsdgRADvl0kDHpTbugCBBrL55KmucH6hP9zWdLIWY//OTfMnzz6xWQRxQqsUFefwHuHyg==" crossorigin="anonymous"></script>
+
+<script>
+    var ctx = document.getElementById("popularcourses")
+    var popularcourses = new Chart(ctx, {
+        type: 'bar',
+        data:{
+            labels:[{% for d in chartdataasdict %} "{{ d.coursetitle }}", {% endfor %}],
+                datasets:[{
+                  data:[{% for c in chartdataasdict %} "{{ c.coursepopularity }}", {% endfor %}],
+                  backgroundColor: 'rgba(208, 222, 245, 0.2)',
+                  borderColor: 'rgba(208, 222, 245, 0.8)',
+                  borderWidth: 3,
+                }]
+            },
+        options: {
+          responsive: true,
+            tooltips:{
+            mode: 'index',
+            intersect: false,
+            },
+            hover:{
+              mode:'nearest'
+            },
+            plugins: {
+                legend: {
+                    display: false
+                }
+            },
+            scales: {
+                yAxis:[{
+                   ticks:{
+                       beginAtZero: true,
+                   },
+                    scaleLabel:{
+                       display: true,
+                        labelString: 'Price'
+                    }
+                }],
+                xAxis:[{
+                   ticks:{
+                       beginAtZero: false
+                   },
+                    scaleLabel:{
+                       display: true,
+                        labelString: 'Popular Courses'
+                    }
+                }],
+            },
+
+        },
+
+
+    });
+
+    var dtx = document.getElementById("studentdistribution")
+    var studentdistribution = new Chart(dtx, {
+        type: 'bar',
+        data:{
+            labels:[{% for d in yearchartdata %} "{{ d.year }}", {% endfor %}],
+    datasets:[{
+        data:[{% for c in yearchartdata %} "{{ c.countyear }}", {% endfor %}],
+    backgroundColor: 'rgba(208, 222, 245, 0.2)',
+        borderColor: 'rgba(208, 222, 245, 0.8)',
+        borderWidth: 5
+    }]
+    },
+    options: {
+        responsive: true,
+            tooltips:{
+            mode: 'index',
+                intersect: false,
+        },
+        hover:{
+            mode:'nearest'
+        },
+        plugins: {
+            legend: {
+                display: false
+            }
+        },
+        scales: {
+            yAxis:[{
+                ticks:{
+                    beginAtZero: true,
+                },
+                scaleLabel:{
+                    display: true,
+                    labelString: 'Price'
+                }
+            }],
+                xAxis:[{
+                ticks:{
+                    beginAtZero: false
+                },
+                scaleLabel:{
+                    display: true,
+                    labelString: 'Popular Courses'
+                }
+            }],
+        },
+    },
+
+    });
+</script>
+
+{% endblock %}
